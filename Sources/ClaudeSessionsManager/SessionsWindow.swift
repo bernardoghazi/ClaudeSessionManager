@@ -193,29 +193,13 @@ struct StatusBadge: View {
     var body: some View {
         if let live {
             Label {
-                Text(text(live.phase))
+                Text(live.phase.label)
             } icon: {
                 Image(systemName: "circle.fill")
                     .font(.system(size: 7))
-                    .foregroundStyle(color(live.phase))
+                    .foregroundStyle(live.phase.color)
             }
-            .help(live.waitingFor.map(NotificationComposer.waitingBody) ?? text(live.phase))
-        }
-    }
-
-    private func text(_ phase: Phase) -> String {
-        switch phase {
-        case .waiting: "Waiting"
-        case .running: "Working"
-        default: "Open"
-        }
-    }
-
-    private func color(_ phase: Phase) -> Color {
-        switch phase {
-        case .waiting: .orange
-        case .running: .green
-        default: .blue
+            .help(live.waitingReason ?? live.phase.label)
         }
     }
 }
@@ -228,7 +212,7 @@ struct Row: Identifiable {
 
     var id: Session.ID { session.id }
 
-    /// Descending puts Waiting first, then Working, then Open, then sessions that aren't running.
+    /// Descending puts Waiting first, then Working, then Idle, then sessions that aren't running.
     var statusRank: Int {
         switch live?.phase {
         case nil: 0

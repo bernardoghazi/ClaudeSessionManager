@@ -38,22 +38,14 @@ struct MenuBarContent: View {
     }
 
     private func label(_ session: LiveSession, now: Int64) -> String {
-        var parts = [session.waitingFor ?? session.phase.rawValue]
+        var parts = [session.phase.label]
+        if let reason = session.waitingReason { parts.append(reason) }
         // Only where the wait is the point: how long a session has been idle answers no question.
-        if session.phase != .idle, session.observedAt > 0 {
+        if session.phase == .running || session.phase == .waiting, session.observedAt > 0 {
             parts.append(Duration.milliseconds(max(0, now - session.observedAt)).humanized)
         }
         if !session.isFocusable { parts.append("no tab") }
-        return "\(marker(session.phase))  \(session.name) · \(parts.joined(separator: " · "))"
-    }
-
-    private func marker(_ phase: Phase) -> String {
-        switch phase {
-        case .waiting: "🟠"
-        case .running: "🟢"
-        case .idle: "⚪"
-        default: "⚫"
-        }
+        return "\(session.phase.dot)  \(session.name) · \(parts.joined(separator: " · "))"
     }
 
     private func summary(total: Int, waiting: Int) -> String {
