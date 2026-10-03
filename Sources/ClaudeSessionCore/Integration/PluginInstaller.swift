@@ -21,7 +21,7 @@ public enum PluginStatus: Sendable {
 ///   `directory` marketplace runs the plugin from that path, so the sync is also what makes an
 ///   upgrade take effect.
 public struct PluginInstaller: Sendable {
-    public static let id = "claude-sessions-manager@claude-sessions-manager"
+    public static let id = "claude-session-manager@claude-session-manager"
 
     let source: URL?
     let target: URL

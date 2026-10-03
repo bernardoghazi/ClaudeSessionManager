@@ -2,7 +2,7 @@ import SwiftUI
 import AppKit
 
 @main
-struct ClaudeSessionsManagerApp: App {
+struct ClaudeSessionManagerApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @ObservedObject private var model = AppModel.shared
 

@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import ClaudeSessionsCore
+@testable import ClaudeSessionCore
 
 struct TranscriptTests {
     private func transcript(_ lines: [String], id: String = "abc-123") -> (URL, URL) {

@@ -1,6 +1,6 @@
 import Foundation
 import AppKit
-import ClaudeSessionsCore
+import ClaudeSessionCore
 
 /// Everything the menu and the window render: every session on disk, joined by id with the live
 /// state of the ones that are running.
@@ -120,7 +120,7 @@ final class AppModel: ObservableObject {
         if announce && status == .notInstalled {
             notifier.post(SessionNotification(
                 sessionId: "plugin",
-                title: "Claude Sessions Manager",
+                title: "Claude Session Manager",
                 body: "Helper plugin not installed — install it from the menu bar icon."
             ))
         }

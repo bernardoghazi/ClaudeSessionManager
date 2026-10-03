@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import ClaudeSessionsCore
+@testable import ClaudeSessionCore
 
 struct PluginInstallerTests {
     private let claude = URL(fileURLWithPath: "/usr/local/bin/claude")
@@ -81,12 +81,24 @@ struct PluginInstallerTests {
 
     @Test func removesLegacyPluginWhenPresent() {
         let recorder = Recorder()
-        let out = listing(PluginInstaller.legacyId)
+        let out = listing("agents-overview@agents-overview")
         let removed = installer { recorder.add($0); return CommandResult(exitCode: 0, output: out) }.removeLegacyPlugin()
         #expect(removed)
         #expect(recorder.commands.dropFirst().map { Array($0.dropFirst()) } == [
-            ["plugin", "uninstall", PluginInstaller.legacyId],
+            ["plugin", "uninstall", "agents-overview@agents-overview"],
             ["plugin", "marketplace", "remove", "agents-overview"],
+        ])
+    }
+
+    @Test func removesEveryLegacyPluginPresent() {
+        let recorder = Recorder()
+        let out = listing("agents-overview@agents-overview", "claude-sessions-manager@claude-sessions-manager", "other@x")
+        #expect(installer { recorder.add($0); return CommandResult(exitCode: 0, output: out) }.removeLegacyPlugin())
+        #expect(recorder.commands.dropFirst().map { Array($0.dropFirst()) } == [
+            ["plugin", "uninstall", "agents-overview@agents-overview"],
+            ["plugin", "marketplace", "remove", "agents-overview"],
+            ["plugin", "uninstall", "claude-sessions-manager@claude-sessions-manager"],
+            ["plugin", "marketplace", "remove", "claude-sessions-manager"],
         ])
     }
 

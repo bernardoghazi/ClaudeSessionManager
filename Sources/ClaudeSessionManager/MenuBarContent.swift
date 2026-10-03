@@ -1,6 +1,6 @@
 import SwiftUI
 import AppKit
-import ClaudeSessionsCore
+import ClaudeSessionCore
 
 /// The menu-bar menu: one row per running session, clicking a row focuses its terminal tab.
 struct MenuBarContent: View {
@@ -33,7 +33,7 @@ struct MenuBarContent: View {
         }
 
         Divider()
-        Button("Quit Claude Sessions Manager") { NSApp.terminate(nil) }
+        Button("Quit Claude Session Manager") { NSApp.terminate(nil) }
             .keyboardShortcut("q")
     }
 
@@ -73,8 +73,8 @@ enum MenuBarIcon {
     }
 
     static func tooltip(total: Int, waiting: Int) -> String {
-        if total == 0 { return "Claude Sessions Manager — no sessions" }
-        if waiting > 0 { return "Claude Sessions Manager — \(waiting) waiting of \(total)" }
-        return "Claude Sessions Manager — \(total) session\(total == 1 ? "" : "s")"
+        if total == 0 { return "Claude Session Manager — no sessions" }
+        if waiting > 0 { return "Claude Session Manager — \(waiting) waiting of \(total)" }
+        return "Claude Session Manager — \(total) session\(total == 1 ? "" : "s")"
     }
 }

@@ -10,12 +10,12 @@ public enum Paths {
     /// The live session registry, `~/.claude/sessions/<pid>.json`.
     public static var registryDir: URL { claudeDir.appendingPathComponent("sessions", isDirectory: true) }
 
-    /// This app's own directory. `CLAUDE_SESSIONS_MANAGER_HOME` overrides it here and in the plugin hook.
+    /// This app's own directory. `CLAUDE_SESSION_MANAGER_HOME` overrides it here and in the plugin hook.
     public static var appHome: URL {
-        if let override = ProcessInfo.processInfo.environment["CLAUDE_SESSIONS_MANAGER_HOME"], !override.isEmpty {
+        if let override = ProcessInfo.processInfo.environment["CLAUDE_SESSION_MANAGER_HOME"], !override.isEmpty {
             return URL(fileURLWithPath: override, isDirectory: true)
         }
-        return userHome.appendingPathComponent(".claude-sessions-manager", isDirectory: true)
+        return userHome.appendingPathComponent(".claude-session-manager", isDirectory: true)
     }
     public static var addressesDir: URL { appHome.appendingPathComponent("addresses", isDirectory: true) }
     public static var pluginMirrorDir: URL { appHome.appendingPathComponent("plugin", isDirectory: true) }

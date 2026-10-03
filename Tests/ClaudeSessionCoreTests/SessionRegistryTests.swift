@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import ClaudeSessionsCore
+@testable import ClaudeSessionCore
 
 struct SessionRegistryTests {
     private let alive = ProcessLiveness { _ in 0 }

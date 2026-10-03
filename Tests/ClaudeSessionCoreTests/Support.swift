@@ -1,5 +1,5 @@
 import Foundation
-@testable import ClaudeSessionsCore
+@testable import ClaudeSessionCore
 
 func tempDir(_ name: String = "test") -> URL {
     let url = FileManager.default.temporaryDirectory

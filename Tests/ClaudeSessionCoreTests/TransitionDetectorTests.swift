@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import ClaudeSessionsCore
+@testable import ClaudeSessionCore
 
 struct TransitionDetectorTests {
     private func snapshot(_ sessions: LiveSession..., skipped: [SkippedEntry] = []) -> RegistrySnapshot {

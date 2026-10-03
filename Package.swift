@@ -2,12 +2,12 @@
 import PackageDescription
 
 let package = Package(
-    name: "ClaudeSessionsManager",
+    name: "ClaudeSessionManager",
     platforms: [.macOS(.v15)],
     targets: [
-        .target(name: "ClaudeSessionsCore"),
-        .executableTarget(name: "ClaudeSessionsManager", dependencies: ["ClaudeSessionsCore"]),
-        .testTarget(name: "ClaudeSessionsCoreTests", dependencies: ["ClaudeSessionsCore"]),
+        .target(name: "ClaudeSessionCore"),
+        .executableTarget(name: "ClaudeSessionManager", dependencies: ["ClaudeSessionCore"]),
+        .testTarget(name: "ClaudeSessionCoreTests", dependencies: ["ClaudeSessionCore"]),
     ],
     swiftLanguageModes: [.v5]
 )

@@ -1,5 +1,5 @@
 import SwiftUI
-import ClaudeSessionsCore
+import ClaudeSessionCore
 
 /// How a live phase reads and looks, shared by the window and the menu bar so they always agree.
 extension Phase {

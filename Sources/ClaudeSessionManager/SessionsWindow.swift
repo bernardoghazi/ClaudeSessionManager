@@ -1,6 +1,6 @@
 import SwiftUI
 import AppKit
-import ClaudeSessionsCore
+import ClaudeSessionCore
 
 struct SessionsWindow: View {
     static let id = "sessions"

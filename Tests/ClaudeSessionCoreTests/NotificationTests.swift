@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import ClaudeSessionsCore
+@testable import ClaudeSessionCore
 
 struct NotificationPolicyTests {
     private let policy = NotificationPolicy()

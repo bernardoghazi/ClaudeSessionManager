@@ -1,6 +1,6 @@
 import Foundation
 import UserNotifications
-import ClaudeSessionsCore
+import ClaudeSessionCore
 
 /// Posts notifications and turns a click into focusing that notification's own session.
 ///

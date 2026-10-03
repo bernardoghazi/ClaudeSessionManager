@@ -1,14 +1,14 @@
 {
-  "name": "claude-sessions-manager",
-  "description": "Companion plugin for the Claude Sessions Manager desktop app",
+  "name": "claude-session-manager",
+  "description": "Companion plugin for the Claude Session Manager desktop app",
   "owner": {
     "name": "Bernardo Ghazi"
   },
   "plugins": [
     {
-      "name": "claude-sessions-manager",
-      "description": "Records which terminal tab each Claude Code session runs in, so Claude Sessions Manager can focus it",
-      "source": "./plugins/claude-sessions-manager",
+      "name": "claude-session-manager",
+      "description": "Records which terminal tab each Claude Code session runs in, so Claude Session Manager can focus it",
+      "source": "./plugins/claude-session-manager",
       "version": "0.2.0",
       "category": "productivity",
       "tags": ["terminal", "warp", "sessions"]

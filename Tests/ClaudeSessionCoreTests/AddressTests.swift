@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import ClaudeSessionsCore
+@testable import ClaudeSessionCore
 
 struct AddressStoreTests {
     /// Exactly what the plugin's record-address.sh hook writes.

@@ -1,5 +1,5 @@
 #!/bin/sh
-# Claude Sessions Manager - records which terminal tab a Claude Code session is running in.
+# Claude Session Manager - records which terminal tab a Claude Code session is running in.
 #
 # Runs on SessionStart and on UserPromptSubmit. SessionStart alone would never see a
 # session that was already running when this plugin was installed, and those are exactly
@@ -36,7 +36,7 @@ case "$SESSION_ID" in
     *[!a-zA-Z0-9_-]*) exit 0 ;;
 esac
 
-DIR="${CLAUDE_SESSIONS_MANAGER_HOME:-$HOME/.claude-sessions-manager}/addresses"
+DIR="${CLAUDE_SESSION_MANAGER_HOME:-$HOME/.claude-session-manager}/addresses"
 mkdir -p "$DIR" 2>/dev/null || exit 0
 
 # Write to a temporary file and rename, so a reader polling this directory can never

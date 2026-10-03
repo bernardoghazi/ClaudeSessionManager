@@ -1,5 +1,5 @@
 {
-  "description": "Claude Sessions Manager address capture",
+  "description": "Claude Session Manager address capture",
   "hooks": {
     "SessionStart": [
       {
