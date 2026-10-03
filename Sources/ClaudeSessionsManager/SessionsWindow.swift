@@ -77,7 +77,11 @@ struct SessionsWindow: View {
                         .disabled(!s.folderExists)
                 }
             } primaryAction: { ids in
-                if let s = model.sessions.first(where: { ids.contains($0.id) }) {
+                guard let s = model.sessions.first(where: { ids.contains($0.id) }) else { return }
+                // A running session is already somewhere; go there instead of resuming it twice.
+                if let live = model.live[s.id], live.isFocusable {
+                    model.focus(live)
+                } else {
                     copy(s.resumeCommand, "Resume command")
                 }
             }
@@ -101,7 +105,7 @@ struct SessionsWindow: View {
                 Button { selected.first.map { copy($0.resumeCommand, "Resume command") } } label: {
                     Label("Copy Resume Command", systemImage: "terminal")
                 }
-                .help("Copy `claude -r <id>` (double-click a row)")
+                .help("Copy `claude -r <id>` (double-click a row that isn't running)")
                 .disabled(selection.isEmpty)
                 Button { selected.first.map { copy($0.branch, "Branch name") } } label: {
                     Label("Copy Branch Name", systemImage: "arrow.triangle.branch")
