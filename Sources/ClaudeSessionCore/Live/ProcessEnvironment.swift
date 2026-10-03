@@ -2,9 +2,9 @@ import Foundation
 
 /// Reads the environment of a running process owned by this user.
 ///
-/// This is what makes pre-existing sessions work: a hook never runs in a session that started
-/// before the plugin was installed, but Warp exports `WARP_FOCUS_URL` into every shell it spawns
-/// and a process keeps its environment for life.
+/// This is how the app finds a session's terminal tab: Warp exports `WARP_FOCUS_URL` into every
+/// shell it spawns, and a process keeps its environment for life, so it works for every running
+/// session, including ones started before the app.
 public struct ProcessEnvironment: Sendable {
     public let read: @Sendable (Int32) -> [String: String]
 
@@ -29,6 +29,17 @@ public struct ProcessEnvironment: Sendable {
     }
 }
 
+/// Where a session's terminal lives.
+public struct SessionAddress: Equatable, Sendable {
+    public let focusUrl: String
+    public let terminal: String?
+
+    public init(focusUrl: String, terminal: String?) {
+        self.focusUrl = focusUrl
+        self.terminal = terminal
+    }
+}
+
 /// Recovers a session's address from its own process environment.
 ///
 /// Results are cached per pid, including misses: a process's environment is fixed for its
@@ -41,12 +52,12 @@ public final class ProcessAddressResolver {
         self.environment = environment
     }
 
-    public func resolve(pid: Int32, sessionId: String) -> SessionAddress? {
+    public func resolve(pid: Int32) -> SessionAddress? {
         if let cached = cache[pid] { return cached }
         let env = environment.read(pid)
         var address: SessionAddress?
         if let url = env["WARP_FOCUS_URL"], !url.trimmingCharacters(in: .whitespaces).isEmpty {
-            address = SessionAddress(sessionId: sessionId, focusUrl: url, terminal: env["TERM_PROGRAM"], recordedAt: 0)
+            address = SessionAddress(focusUrl: url, terminal: env["TERM_PROGRAM"])
         }
         cache[pid] = .some(address)
         return address

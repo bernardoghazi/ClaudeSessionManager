@@ -24,14 +24,6 @@ struct MenuBarContent: View {
         }
         .keyboardShortcut("o")
 
-        if model.pluginStatus == .notInstalled {
-            Divider()
-            Button(model.isInstallingPlugin ? "Installing helper plugin…" : "Install helper plugin…") {
-                model.installPlugin()
-            }
-            .disabled(model.isInstallingPlugin)
-        }
-
         Divider()
         Button("Quit Claude Session Manager") { NSApp.terminate(nil) }
             .keyboardShortcut("q")

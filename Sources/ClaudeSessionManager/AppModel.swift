@@ -13,8 +13,6 @@ final class AppModel: ObservableObject {
     @Published private(set) var isLoading = false
     @Published private(set) var isSearching = false
     @Published private(set) var live: [String: LiveSession] = [:]
-    @Published private(set) var pluginStatus: PluginStatus = .unknown
-    @Published private(set) var isInstallingPlugin = false
     @Published var query = "" {
         didSet { scheduleContentSearch() }
     }
@@ -22,26 +20,23 @@ final class AppModel: ObservableObject {
     let log = ActivityLog.file()
     let notifier = Notifier()
     private lazy var focuser = SessionFocuser(log: log)
-    private let installer: PluginInstaller
 
     private var cache: [URL: Session] = [:]
     private var searchTask: Task<Void, Never>?
     private var monitorTask: Task<Void, Never>?
 
     private init() {
-        installer = PluginInstaller(source: Self.bundledPlugin(), log: log)
         notifier.onClick = { [weak self] url in
             guard let self else { return }
             self.log.record("notification click -> focused=\(self.focuser.focus(url: url))")
         }
     }
 
-    /// Starts polling and plugin housekeeping. Called once from the app delegate.
+    /// Starts polling. Called once from the app delegate.
     func start() {
         log.record("launch")
         notifier.start()
         startMonitor()
-        setUpPlugin()
         reload()
     }
 
@@ -83,56 +78,6 @@ final class AppModel: ObservableObject {
         if tick.events.contains(where: { if case .appeared(let s) = $0 { !known.contains(s.sessionId) } else { false } }) {
             reload()
         }
-    }
-
-    // MARK: - Plugin
-
-    private func setUpPlugin() {
-        let installer = self.installer
-        Task.detached(priority: .utility) { [weak self] in
-            // Keeps the mirrored hook current, so a new build's hook takes effect on next launch.
-            installer.sync()
-            if installer.removeLegacyPlugin() {
-                // The user had opted into the Agents Overview plugin; carry that choice over.
-                installer.install()
-            }
-            let status = installer.status()
-            await self?.pluginStatusChanged(status, announce: true)
-        }
-    }
-
-    func installPlugin() {
-        guard !isInstallingPlugin else { return }
-        isInstallingPlugin = true
-        let installer = self.installer, log = self.log
-        Task.detached(priority: .userInitiated) { [weak self] in
-            let ok = installer.install()
-            log.record("plugin install requested: success=\(ok)")
-            let status = installer.status()
-            await self?.pluginStatusChanged(status, announce: false)
-        }
-    }
-
-    private func pluginStatusChanged(_ status: PluginStatus, announce: Bool) {
-        log.record("plugin status: \(status)")
-        pluginStatus = status
-        isInstallingPlugin = false
-        if announce && status == .notInstalled {
-            notifier.post(SessionNotification(
-                sessionId: "plugin",
-                title: "Claude Session Manager",
-                body: "Helper plugin not installed — install it from the menu bar icon."
-            ))
-        }
-    }
-
-    /// The plugin shipped inside the app bundle; in a `swift run` there is no bundle, so use the repo's copy.
-    private static func bundledPlugin() -> URL? {
-        let candidates = [
-            Bundle.main.resourceURL?.appendingPathComponent("plugin", isDirectory: true),
-            URL(fileURLWithPath: FileManager.default.currentDirectoryPath).appendingPathComponent("plugin", isDirectory: true),
-        ]
-        return candidates.compactMap { $0 }.first { FileManager.default.fileExists(atPath: $0.path) }
     }
 
     // MARK: - Transcripts

@@ -13,7 +13,6 @@ It merges two earlier tools, Agents Overview and Claude Sessions Finder, into on
 - Xcode or the Swift 6 toolchain, to build
 - Claude Code
 - [Warp](https://www.warp.dev), if you want clicking a session or notification to focus its terminal tab. Status and the session finder work in any terminal.
-- `jq`, used by the optional helper plugin's hook
 
 ## Build and run
 
@@ -35,12 +34,12 @@ If you move or rename the repo folder, delete `.build/` before building. Swift's
 To uninstall, quit the app, then:
 
 ```sh
-claude plugin uninstall claude-session-manager@claude-session-manager
-claude plugin marketplace remove claude-session-manager
 rm -rf /Applications/ClaudeSessionManager.app ~/.claude-session-manager
 ```
 
-For development, run the tests with `swift test` (Swift Testing). `swift run` also starts the app, but without a bundle there are no notifications and no bundled plugin.
+Earlier versions installed a helper plugin. If `claude plugin list` still shows `claude-session-manager@claude-session-manager`, remove it with `claude plugin uninstall claude-session-manager@claude-session-manager` and `claude plugin marketplace remove claude-session-manager`.
+
+For development, run the tests with `swift test` (Swift Testing). `swift run` also starts the app, but without a bundle there are no notifications.
 
 The first time the app posts a notification, macOS asks for permission. Notifications default to the persistent Alert style. If yours disappear after a few seconds, change the style in System Settings → Notifications → Claude Session Manager.
 
@@ -56,7 +55,7 @@ The dot is blue when all is calm and orange when any session is waiting. Each ru
 🔵  marcopolo-b1 · Idle
 ```
 
-Clicking a row focuses that session's terminal tab. A row is disabled, and says `no tab`, when the app can't tell which tab the session is in. The menu also has **Open Sessions Window** (⌘O), **Install helper plugin…** (shown only when the plugin is missing) and **Quit** (⌘Q).
+Clicking a row focuses that session's terminal tab. A row is disabled, and says `no tab`, when the app can't tell which tab the session is in. The menu also has **Open Sessions Window** (⌘O) and **Quit** (⌘Q).
 
 ### Statuses
 
@@ -100,38 +99,29 @@ Search matches titles, folders, branches and IDs straight away, and transcript c
 |---|---|
 | `~/.claude/sessions/<pid>.json` | Live status. This is Claude Code's internal, undocumented registry, polled every 500 ms. |
 | `~/.claude/projects/*/<id>.jsonl` | The session list, titles, folders and branches, plus content search |
-| the session process's environment (`ps eww`) | `WARP_FOCUS_URL`, to find the Warp tab of any running session, including ones started before the app |
-| `~/.claude-session-manager/addresses/<id>.json` | Tab addresses recorded by the helper plugin; these take priority over the process environment |
+| the session process's environment (`ps eww`) | `WARP_FOCUS_URL`, to find the Warp tab of any running session, including ones started before the app. Read once per session. |
 
 | Writes | When |
 |---|---|
 | two lines appended to a transcript (`custom-title` and `agent-name`) | renaming a session, the same records `/rename` writes |
-| `~/.claude-session-manager/activity.log` | always; a diagnostic log of launches, notifications, clicks and plugin actions |
-| `~/.claude-session-manager/plugin/` | on every launch, a copy of the bundled plugin |
+| `~/.claude-session-manager/activity.log` | always; a diagnostic log of launches, notifications and clicks |
 
-Set `CLAUDE_SESSION_MANAGER_HOME` to use a folder other than `~/.claude-session-manager`. The app and the plugin hook both honour it.
+Set `CLAUDE_SESSION_MANAGER_HOME` to use a folder other than `~/.claude-session-manager`.
 
 The registry reader is built to avoid false notifications. A file caught mid-write is not treated as a session ending. A recycled pid is detected by comparing the process start time with the session's. An unrecognised status keeps the last known one.
 
-### Helper plugin
-
-`plugin/` holds a small Claude Code plugin, `claude-session-manager@claude-session-manager`. Its hook runs on `SessionStart` and `UserPromptSubmit` and records which Warp tab the session is in. The hook never reads or stores your prompt text. The plugin is optional, since the process environment usually finds the tab anyway.
-
-- The app copies the plugin to `~/.claude-session-manager/plugin` and registers that folder as a marketplace through the `claude` CLI. It never edits `settings.json`.
-- Because Claude Code runs the hook from that folder, copying a new version on launch is enough to update it.
-- On launch, the app also uninstalls the plugins it replaces, `agents-overview@agents-overview` and `claude-sessions-manager@claude-sessions-manager`, and installs this one in their place. If you open the old Agents Overview app again, it will put its plugin back.
+The app needs no setup inside Claude Code: no plugin, hook or settings change.
 
 ## Project layout
 
 ```
 Package.swift
 build.sh                         builds and signs ClaudeSessionManager.app
-plugin/                          the helper plugin (marketplace + hook)
 Sources/ClaudeSessionCore/       logic, no UI
   Transcripts/                   session index, content search, rename
-  Live/                          registry reader, process liveness and environment, tab addresses
+  Live/                          registry reader, process liveness, tab lookup from the process environment
   Monitor/                       transition detection, notification policy and wording, poll loop
-  Integration/                   paths, plugin install and migration, terminal focusing, logging
+  Integration/                   paths, terminal focusing, logging, running commands
 Sources/ClaudeSessionManager/    the SwiftUI app: menu bar, sessions window, notifications
 Tests/ClaudeSessionCoreTests/    tests for the core library
 ```
