@@ -17,9 +17,27 @@ It merges two earlier tools, Agents Overview and Claude Sessions Finder, into on
 
 ## Build and run
 
+To install, or to update an installed copy:
+
 ```sh
-./build.sh                      # release build, bundles and ad-hoc signs ClaudeSessionManager.app
+./build.sh --install   # builds, replaces /Applications/ClaudeSessionManager.app and relaunches it
+```
+
+To build and try it from the repo without installing:
+
+```sh
+./build.sh                      # release build, bundles and ad-hoc signs ClaudeSessionManager.app here
 open ClaudeSessionManager.app   # launch through LaunchServices so notification clicks work
+```
+
+If you move or rename the repo folder, delete `.build/` before building. Swift's build cache records the old path and fails otherwise.
+
+To uninstall, quit the app, then:
+
+```sh
+claude plugin uninstall claude-session-manager@claude-session-manager
+claude plugin marketplace remove claude-session-manager
+rm -rf /Applications/ClaudeSessionManager.app ~/.claude-session-manager
 ```
 
 For development, run the tests with `swift test` (Swift Testing). `swift run` also starts the app, but without a bundle there are no notifications and no bundled plugin.

@@ -1,6 +1,7 @@
 #!/bin/zsh
 # Builds ClaudeSessionManager.app in this folder.
-# Launch it with `open ClaudeSessionManager.app`: notification clicks only reach an app started by LaunchServices.
+# `--install` also replaces /Applications/ClaudeSessionManager.app and relaunches it.
+# Launch with `open`: notification clicks only reach an app started by LaunchServices.
 set -euo pipefail
 cd "$(dirname "$0")"
 swift build -c release
@@ -30,3 +31,12 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 PLIST
 codesign --force --sign - "$APP"
 echo "Built $(pwd)/$APP"
+
+if [[ "${1:-}" == "--install" ]]; then
+  INSTALLED="/Applications/$APP"
+  pkill -x ClaudeSessionManager && sleep 1 || true
+  rm -rf "$INSTALLED"
+  ditto "$APP" "$INSTALLED"
+  open "$INSTALLED"
+  echo "Installed and launched $INSTALLED"
+fi
