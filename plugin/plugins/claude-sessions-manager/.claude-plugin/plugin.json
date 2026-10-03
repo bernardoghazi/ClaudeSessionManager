@@ -1,0 +1,8 @@
+{
+  "name": "claude-sessions-manager",
+  "description": "Records which terminal tab each Claude Code session runs in, so Claude Sessions Manager can focus it",
+  "version": "0.2.0",
+  "author": {
+    "name": "Bernardo Ghazi"
+  }
+}
