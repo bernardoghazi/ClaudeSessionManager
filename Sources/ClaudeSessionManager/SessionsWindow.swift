@@ -24,6 +24,8 @@ struct SessionsWindow: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            FilterBar()
+            Divider()
             Table(rows, selection: $selection, sortOrder: $sortOrder) {
                 TableColumn("Status", value: \.statusRank) { s in
                     StatusBadge(live: s.live)
@@ -75,6 +77,8 @@ struct SessionsWindow: View {
                     }
                     Button("Reveal Folder in Finder") { reveal(s) }
                         .disabled(!s.folderExists)
+                    Button("Show Only This Folder") { model.filter.folder = s.folder }
+                        .disabled(model.filter.folder == s.folder)
                 }
             } primaryAction: { ids in
                 guard let s = model.sessions.first(where: { ids.contains($0.id) }) else { return }
@@ -90,11 +94,20 @@ struct SessionsWindow: View {
                 showToast("Copied session ID")
                 return [NSItemProvider(object: s.id as NSString)]
             }
+            .overlay {
+                if model.filter.isActive, !model.isLoading, !model.isSearching, model.filtered.isEmpty {
+                    ContentUnavailableView {
+                        Label("No sessions match the filters", systemImage: "line.3.horizontal.decrease.circle")
+                    } actions: {
+                        Button("Clear Filters", action: model.clearFilters)
+                    }
+                }
+            }
 
             Divider()
             statusBar
         }
-        .searchable(text: $model.query, placement: .toolbar, prompt: "Search titles, folders, branches and content")
+        .searchable(text: $model.filter.query, placement: .toolbar, prompt: model.filter.scope.prompt)
         .toolbar {
             ToolbarItemGroup {
                 Button { selected.first.map { copy($0.id, "Session ID") } } label: {

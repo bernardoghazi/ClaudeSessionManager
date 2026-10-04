@@ -13,8 +13,15 @@ final class AppModel: ObservableObject {
     @Published private(set) var isLoading = false
     @Published private(set) var isSearching = false
     @Published private(set) var live: [String: LiveSession] = [:]
-    @Published var query = "" {
-        didSet { scheduleContentSearch() }
+    /// Folder, status and search filters; a session must pass all of them to be listed.
+    @Published var filter = SessionFilter() {
+        didSet {
+            // Folder and status apply instantly; only a new query (or a scope that now needs
+            // transcripts) is worth a rescan.
+            if filter.trimmedQuery != oldValue.trimmedQuery || filter.needsContentSearch != oldValue.needsContentSearch {
+                scheduleContentSearch()
+            }
+        }
     }
 
     let log = ActivityLog.file()
@@ -83,15 +90,24 @@ final class AppModel: ObservableObject {
     // MARK: - Transcripts
 
     var filtered: [Session] {
-        let q = query.trimmingCharacters(in: .whitespaces)
-        guard !q.isEmpty else { return sessions }
-        return sessions.filter { s in
-            s.title.localizedCaseInsensitiveContains(q)
-                || s.folder.localizedCaseInsensitiveContains(q)
-                || s.branch.localizedCaseInsensitiveContains(q)
-                || s.id.localizedCaseInsensitiveContains(q)
-                || (contentMatches?.contains(s.id) ?? false)
-        }
+        sessions.filter { filter.matches($0, phase: live[$0.id]?.phase, contentMatches: contentMatches) }
+    }
+
+    /// Every folder that has sessions, for the Folder filter, with how many each has.
+    var folderOptions: [(folder: String, display: String, count: Int)] {
+        Dictionary(grouping: sessions, by: \.folder)
+            .map { (folder: $0.key, display: $0.value[0].displayFolder, count: $0.value.count) }
+            .sorted { $0.display.localizedStandardCompare($1.display) == .orderedAscending }
+    }
+
+    /// Clears folder, status and search text; the search scope is a preference, so it stays.
+    func clearFilters() {
+        filter = SessionFilter(scope: filter.scope)
+    }
+
+    /// How many sessions each status choice would show, ignoring the other filters.
+    func count(of status: StatusFilter) -> Int {
+        sessions.filter { status.matches(live[$0.id]?.phase) }.count
     }
 
     func reload() {
@@ -118,8 +134,8 @@ final class AppModel: ObservableObject {
 
     private func scheduleContentSearch(debounce: Bool = true) {
         searchTask?.cancel()
-        let q = query.trimmingCharacters(in: .whitespaces)
-        guard !q.isEmpty else {
+        let q = filter.trimmedQuery
+        guard filter.needsContentSearch else {
             contentMatches = nil
             isSearching = false
             return

@@ -35,3 +35,34 @@ extension LiveSession {
         phase == .waiting ? NotificationComposer.waitingBody(waitingFor) : nil
     }
 }
+
+extension StatusFilter {
+    var label: String {
+        switch self {
+        case .all: "All"
+        case .running: "Running"
+        case .waiting: Phase.waiting.label
+        case .working: Phase.running.label
+        case .idle: Phase.idle.label
+        case .notRunning: "Not running"
+        }
+    }
+}
+
+extension SearchScope {
+    var label: String {
+        switch self {
+        case .all: "All"
+        case .title: "Title"
+        case .content: "Content"
+        }
+    }
+
+    var prompt: String {
+        switch self {
+        case .all: "Search titles, folders, branches and content"
+        case .title: "Search titles"
+        case .content: "Search transcript content"
+        }
+    }
+}
