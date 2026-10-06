@@ -30,14 +30,14 @@ public enum SearchScope: String, CaseIterable, Sendable {
 
 /// Every filter the Sessions window applies. A session must pass all of them.
 public struct SessionFilter: Equatable, Sendable {
-    /// An exact `Session.folder`, or nil for every folder.
-    public var folder: String?
+    /// Exact `Session.folder` values to show; empty shows every folder.
+    public var folders: Set<String> = []
     public var status: StatusFilter = .all
     public var query = ""
     public var scope: SearchScope = .all
 
-    public init(folder: String? = nil, status: StatusFilter = .all, query: String = "", scope: SearchScope = .all) {
-        self.folder = folder
+    public init(folders: Set<String> = [], status: StatusFilter = .all, query: String = "", scope: SearchScope = .all) {
+        self.folders = folders
         self.status = status
         self.query = query
         self.scope = scope
@@ -46,14 +46,14 @@ public struct SessionFilter: Equatable, Sendable {
     public var trimmedQuery: String { query.trimmingCharacters(in: .whitespaces) }
 
     /// Whether anything narrows the list, so there is something to clear.
-    public var isActive: Bool { folder != nil || status != .all || !trimmedQuery.isEmpty }
+    public var isActive: Bool { !folders.isEmpty || status != .all || !trimmedQuery.isEmpty }
 
     /// Whether the transcripts have to be scanned to answer the query.
     public var needsContentSearch: Bool { !trimmedQuery.isEmpty && scope != .title }
 
     /// The folder and status filters alone, which need no transcript scan.
     public func matchesFolderAndStatus(_ session: Session, phase: Phase?) -> Bool {
-        (folder == nil || session.folder == folder) && status.matches(phase)
+        (folders.isEmpty || folders.contains(session.folder)) && status.matches(phase)
     }
 
     /// `contentMatches` holds the ids whose transcript contains the query, or nil while that scan

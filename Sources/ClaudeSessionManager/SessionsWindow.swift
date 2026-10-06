@@ -77,8 +77,11 @@ struct SessionsWindow: View {
                     }
                     Button("Reveal Folder in Finder") { reveal(s) }
                         .disabled(!s.folderExists)
-                    Button("Show Only This Folder") { model.filter.folder = s.folder }
-                        .disabled(model.filter.folder == s.folder)
+                    Button("Show Only This Folder") { model.filter.folders = [s.folder] }
+                        .disabled(model.filter.folders == [s.folder])
+                    if !model.filter.folders.isEmpty, !model.filter.folders.contains(s.folder) {
+                        Button("Also Show This Folder") { model.filter.folders.insert(s.folder) }
+                    }
                 }
             } primaryAction: { ids in
                 guard let s = model.sessions.first(where: { ids.contains($0.id) }) else { return }
@@ -99,7 +102,7 @@ struct SessionsWindow: View {
                     ContentUnavailableView {
                         Label("No sessions match the filters", systemImage: "line.3.horizontal.decrease.circle")
                     } actions: {
-                        Button("Clear Filters", action: model.clearFilters)
+                        Button("Clear Preferences", action: model.clearFilters)
                     }
                 }
             }
@@ -107,7 +110,6 @@ struct SessionsWindow: View {
             Divider()
             statusBar
         }
-        .searchable(text: $model.filter.query, placement: .toolbar, prompt: model.filter.scope.prompt)
         .toolbar {
             ToolbarItemGroup {
                 Button { selected.first.map { copy($0.id, "Session ID") } } label: {

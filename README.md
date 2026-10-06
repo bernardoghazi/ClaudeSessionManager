@@ -89,23 +89,23 @@ A table of every session on disk, with Status, Session (title), Folder, Branch, 
 | Copy branch name | ⇧⌘C |
 | Rename | ⌘⏎. Refused while the session is running; use `/rename` there instead |
 | Reveal folder in Finder | right-click |
-| Show only that session's folder | right-click → Show Only This Folder |
+| Filter by that session's folder | right-click → Show Only This Folder, or Also Show This Folder to add it to the folders already chosen |
 | Refresh | ⌘R. The list also refreshes when the app becomes active |
 
 #### Filtering
 
 Filters combine: a session is listed only if it passes all of them. For example, pick a folder, then a status, then search for a word.
 
-- **Folder** (bar above the table): one exact folder, or All folders. Each entry shows how many sessions it has.
-- **Status** (bar above the table): All, Running (any live session), Waiting, Working, Idle or Not running, each with its count.
-- **Search** (toolbar field), limited by **Search in** in the bar above the table:
+- **Folders** (bar above the table): opens a checklist of every folder, with how many sessions each has. Tick as many as you like; a session in any ticked folder passes. A field at the top narrows a long list, and **Show All Folders** unticks everything.
+- **Status** (bar above the table): All, Running (any live session), Waiting, Working, Idle or Not running.
+- **Search** (field in the bar above the table, next to Clear Preferences), limited by **Search in**:
   - **All** matches titles, folders, branches and IDs straight away, and transcript contents after a short pause.
   - **Title** matches titles only and never scans transcripts.
   - **Content** matches transcript contents only.
 
   Content search ignores case for ASCII letters only.
 
-**Clear Filters** resets folder, status and search text and keeps the search scope. When nothing matches, the table says so and offers the same button. Filters stay set while the app runs, including after closing and reopening the window, but reset when the app quits.
+**Clear Preferences** resets folders, status and search text and keeps the search scope. When nothing matches, the table says so and offers the same button. Filters stay set while the app runs, including after closing and reopening the window, but reset when the app quits.
 
 ## How it works
 

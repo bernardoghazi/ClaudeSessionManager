@@ -21,10 +21,18 @@ struct SessionFilterTests {
     }
 
     @Test func folderMatchesExactly() {
-        let f = SessionFilter(folder: "/work/app")
+        let f = SessionFilter(folders: ["/work/app"])
         #expect(f.matches(session(folder: "/work/app"), phase: nil, contentMatches: nil))
         #expect(!f.matches(session(folder: "/work/app-old"), phase: nil, contentMatches: nil))
         #expect(!f.matches(session(folder: "/work"), phase: nil, contentMatches: nil))
+    }
+
+    @Test func anyOfSeveralFoldersMatches() {
+        let f = SessionFilter(folders: ["/work/app", "/work/site"])
+        #expect(f.matches(session(folder: "/work/app"), phase: nil, contentMatches: nil))
+        #expect(f.matches(session(folder: "/work/site"), phase: nil, contentMatches: nil))
+        #expect(!f.matches(session(folder: "/work/other"), phase: nil, contentMatches: nil))
+        #expect(SessionFilter(folders: []).matches(session(folder: "/anywhere"), phase: nil, contentMatches: nil))
     }
 
     @Test func titleScopeIgnoresEverythingButTheTitle() {
@@ -51,7 +59,7 @@ struct SessionFilterTests {
     }
 
     @Test func everyFilterMustPass() {
-        let f = SessionFilter(folder: "/work/app", status: .running, query: "login", scope: .title)
+        let f = SessionFilter(folders: ["/work/app"], status: .running, query: "login", scope: .title)
         #expect(f.matches(session(), phase: .idle, contentMatches: nil))
         #expect(!f.matches(session(), phase: nil, contentMatches: nil))                       // not running
         #expect(!f.matches(session(folder: "/elsewhere"), phase: .idle, contentMatches: nil))  // wrong folder
@@ -65,7 +73,7 @@ struct SessionFilterTests {
     @Test func activeAndContentSearchFlags() {
         #expect(!SessionFilter().isActive)
         #expect(!SessionFilter(query: "  ", scope: .content).isActive)
-        #expect(SessionFilter(folder: "/a").isActive)
+        #expect(SessionFilter(folders: ["/a"]).isActive)
         #expect(SessionFilter(status: .waiting).isActive)
         #expect(SessionFilter(query: "x").isActive)
 

@@ -105,11 +105,6 @@ final class AppModel: ObservableObject {
         filter = SessionFilter(scope: filter.scope)
     }
 
-    /// How many sessions each status choice would show, ignoring the other filters.
-    func count(of status: StatusFilter) -> Int {
-        sessions.filter { status.matches(live[$0.id]?.phase) }.count
-    }
-
     func reload() {
         guard !isLoading else { return }
         isLoading = true
