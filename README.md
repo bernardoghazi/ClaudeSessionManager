@@ -98,7 +98,7 @@ Filters combine: a session is listed only if it passes all of them. For example,
 
 - **Folders** (bar above the table): opens a checklist of every folder, with how many sessions each has. Tick as many as you like; a session in any ticked folder passes. A field at the top narrows a long list, and **Show All Folders** unticks everything.
 - **Status** (bar above the table): All, Running (any live session), Waiting, Working, Idle or Not running.
-- **Search** (field in the bar above the table, next to Clear Preferences), limited by **Search in**:
+- **Search** (field in the bar above the table, right of **Search in**, which limits what it matches):
   - **All** matches titles, folders, branches and IDs straight away, and transcript contents after a short pause.
   - **Title** matches titles only and never scans transcripts.
   - **Content** matches transcript contents only.

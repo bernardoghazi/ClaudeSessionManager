@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 import ClaudeSessionCore
 
 /// Folder, status and search-scope filters above the sessions table. They combine with each other
@@ -25,10 +26,10 @@ struct FilterBar: View {
             .pickerStyle(.segmented)
             .fixedSize()
 
-            Spacer()
-
             SearchField(text: $model.filter.query, prompt: model.filter.scope.prompt)
                 .frame(minWidth: 180, maxWidth: 320)
+
+            Spacer()
 
             Button("Clear Preferences", action: model.clearFilters)
                 .disabled(!model.filter.isActive)
@@ -111,27 +112,40 @@ private struct FolderChooser: View {
     }
 }
 
-/// The search text, styled like a toolbar search field: magnifier, prompt and a clear button.
-private struct SearchField: View {
+/// AppKit's own search field, so its height, bezel and colours match the other controls in the bar.
+private struct SearchField: NSViewRepresentable {
     @Binding var text: String
     let prompt: String
 
-    var body: some View {
-        HStack(spacing: 4) {
-            Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
-            TextField(prompt, text: $text)
-                .textFieldStyle(.plain)
-            if !text.isEmpty {
-                Button { text = "" } label: {
-                    Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
-                }
-                .buttonStyle(.plain)
-                .help("Clear search")
-            }
+    func makeNSView(context: Context) -> NSSearchField {
+        let field = NSSearchField()
+        field.delegate = context.coordinator
+        field.sendsSearchStringImmediately = true
+        // The clear (×) button sends the action rather than a text-change notification.
+        field.target = context.coordinator
+        field.action = #selector(Coordinator.searchChanged(_:))
+        return field
+    }
+
+    func updateNSView(_ field: NSSearchField, context: Context) {
+        if field.stringValue != text { field.stringValue = text }
+        field.placeholderString = prompt
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator(text: $text) }
+
+    final class Coordinator: NSObject, NSSearchFieldDelegate {
+        var text: Binding<String>
+
+        init(text: Binding<String>) { self.text = text }
+
+        func controlTextDidChange(_ notification: Notification) {
+            guard let field = notification.object as? NSSearchField else { return }
+            text.wrappedValue = field.stringValue
         }
-        .padding(.horizontal, 6)
-        .padding(.vertical, 3)
-        .background(RoundedRectangle(cornerRadius: 6).fill(Color(nsColor: .textBackgroundColor)))
-        .overlay(RoundedRectangle(cornerRadius: 6).strokeBorder(Color(nsColor: .separatorColor)))
+
+        @objc func searchChanged(_ field: NSSearchField) {
+            if text.wrappedValue != field.stringValue { text.wrappedValue = field.stringValue }
+        }
     }
 }
