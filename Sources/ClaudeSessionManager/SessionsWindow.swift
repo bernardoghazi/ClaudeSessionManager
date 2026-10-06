@@ -134,10 +134,6 @@ struct SessionsWindow: View {
                 .help("Rename session (⌘⏎)")
                 .keyboardShortcut(.return, modifiers: .command)
                 .disabled(selected.first.map { model.live[$0.id] != nil } ?? true)
-                Button { model.reload() } label: {
-                    Label("Refresh", systemImage: "arrow.clockwise")
-                }
-                .help("Refresh (⌘R)")
             }
         }
         .sheet(item: $renaming) { s in

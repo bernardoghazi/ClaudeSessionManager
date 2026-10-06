@@ -90,7 +90,7 @@ A table of every session on disk, with Status, Session (title), Folder, Branch, 
 | Rename | ⌘⏎. Refused while the session is running; use `/rename` there instead |
 | Reveal folder in Finder | right-click |
 | Filter by that session's folder | right-click → Show Only This Folder, or Also Show This Folder to add it to the folders already chosen |
-| Refresh | ⌘R. The list also refreshes when the app becomes active |
+| Refresh | ⌘R, or the Refresh button at the right end of the filter bar. The list also refreshes when the app becomes active |
 
 #### Filtering
 
@@ -105,7 +105,7 @@ Filters combine: a session is listed only if it passes all of them. For example,
 
   Content search ignores case for ASCII letters only.
 
-**Clear Preferences** resets folders, status and search text and keeps the search scope. When nothing matches, the table says so and offers the same button. Filters stay set while the app runs, including after closing and reopening the window, but reset when the app quits.
+**Clear Preferences** (right of the search field) resets folders, status and search text and keeps the search scope. When nothing matches, the table says so and offers the same button. Filters stay set while the app runs, including after closing and reopening the window, but reset when the app quits.
 
 ## How it works
 

@@ -29,10 +29,15 @@ struct FilterBar: View {
             SearchField(text: $model.filter.query, prompt: model.filter.scope.prompt)
                 .frame(minWidth: 180, maxWidth: 320)
 
-            Spacer()
-
             Button("Clear Preferences", action: model.clearFilters)
                 .disabled(!model.filter.isActive)
+
+            Spacer()
+
+            Button(action: model.reload) {
+                Label("Refresh", systemImage: "arrow.clockwise")
+            }
+            .help("Refresh (⌘R)")
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
