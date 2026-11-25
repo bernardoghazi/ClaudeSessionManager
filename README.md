@@ -1,5 +1,9 @@
 # Claude Session Manager
 
+> **Status: experimental, work in progress.** This is a personal project and isn't finished. Expect rough edges and breaking changes. It reads Claude Code's internal, undocumented files, so a Claude Code update may break it.
+>
+> Not affiliated with or endorsed by Anthropic.
+
 A macOS menu-bar app for keeping track of your [Claude Code](https://docs.claude.com/en/docs/claude-code) sessions. It does two jobs:
 
 - **Live status.** A dot in the menu bar lists every running session and turns orange when one needs you. Clicking a session brings its Warp tab to the front. Notifications tell you when a session is waiting on you or has finished a turn.
